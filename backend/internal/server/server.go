@@ -271,7 +271,7 @@ func (s *Server) createBucket(w http.ResponseWriter,r *http.Request,cred apiCred
 	if !decodeJSON(w,r,&req){return}; req.Name=strings.ToLower(strings.TrimSpace(req.Name))
 	if !bucketNamePattern.MatchString(req.Name) {writeError(w,400,"bucket name must be 3-63 lowercase letters, numbers or hyphens");return}
 	var count,limit int
-	if err:=s.db.QueryRowContext(r.Context(),"SELECT COUNT(*),p.bucket_limit FROM buckets b JOIN projects p ON p.id=b.project_id WHERE p.id=$1 GROUP BY p.bucket_limit",cred.ProjectID).Scan(&count,&limit);err!=nil && !errors.Is(err,sql.ErrNoRows){writeError(w,500,"could not check bucket limit");return}
+	if err:=s.db.QueryRowContext(r.Context(),"SELECT COUNT(b.id),p.bucket_limit FROM projects p LEFT JOIN buckets b ON b.project_id=p.id WHERE p.id=$1 GROUP BY p.bucket_limit",cred.ProjectID).Scan(&count,&limit);err!=nil && !errors.Is(err,sql.ErrNoRows){writeError(w,500,"could not check bucket limit");return}
 	if count>=limit && limit>0 {writeError(w,409,"project bucket limit reached");return}
 	storageName,err:=physicalBucketName();if err!=nil{writeError(w,500,"could not allocate storage bucket");return}
 	_,err=s.store.CreateBucket(r.Context(),&s3.CreateBucketInput{Bucket:aws.String(storageName)})
