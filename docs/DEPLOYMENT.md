@@ -11,3 +11,6 @@ The Compose stack is for local development and private testing. Before public us
 8. Test tenant isolation, revoked API keys, quota enforcement and restore procedures before production traffic.
 
 JWT and S3 credentials must stay on the server. Mobile/web clients should use scoped project keys only where appropriate; for public web clients prefer short-lived restricted upload tokens through a trusted backend.
+
+
+CI validation runs on pushes to main and pull requests. Review the Actions result before merging deployment changes.
