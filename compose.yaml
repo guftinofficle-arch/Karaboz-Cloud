@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-karaboz_cloud}
+      POSTGRES_USER: ${POSTGRES_USER:-karaboz}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env and set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U karaboz -d karaboz_cloud"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    command: server -s3 -dir=/data -ip=seaweedfs -ip.bind=0.0.0.0 -s3.config=/etc/seaweedfs/s3.json
+    volumes:
+      - seaweed_data:/data
+      - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    ports:
+      - "8333:8333"
+  api:
+    build: ./backend
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8080}
+    ports:
+      - "4173:80"
+    depends_on:
+      - api
+volumes:
+  postgres_data:
+  seaweed_data:

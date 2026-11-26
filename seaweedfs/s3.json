@@ -1,0 +1,11 @@
+{
+  "identities": [
+    {
+      "name": "karaboz-local",
+      "credentials": [
+        { "accessKey": "karaboz-local-access", "secretKey": "replace-this-local-s3-secret" }
+      ],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}

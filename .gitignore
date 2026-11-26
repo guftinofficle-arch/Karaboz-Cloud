@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/backend/bin/
+/backend/vendor/
+/dashboard/node_modules/
+/dashboard/dist/
+.DS_Store
+.vscode/
+.idea/
