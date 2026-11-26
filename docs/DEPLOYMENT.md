@@ -14,3 +14,6 @@ JWT and S3 credentials must stay on the server. Mobile/web clients should use sc
 
 
 CI validation runs on pushes to main and pull requests. Review the Actions result before merging deployment changes.
+
+
+The current CI pipeline runs Go module resolution, backend tests/build, and the frontend production build for pull requests and main-branch pushes.
